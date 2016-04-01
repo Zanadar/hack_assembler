@@ -1,6 +1,10 @@
+require 'pry'
+
 class Parser
-  def initialize(file_path)
-    @file = File.open(file_path)
+  attr_accessor :command
+
+  def initialize(stream)
+    @file = stream
     @command = ''
   end
 
@@ -9,11 +13,10 @@ class Parser
   end
 
   def advance
-    @command = @file.gets('\n')
+    @command = @file.gets
   end
 
   def commandType
-    # May want to memoize this?
     if @command[0] = '@'
       return :A_COMMAND
     elsif
