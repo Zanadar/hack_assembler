@@ -9,7 +9,7 @@ class Parser
   end
 
   def hasMoreCommands
-    @file.eof?
+    !@file.eof?
   end
 
   def advance
@@ -17,22 +17,25 @@ class Parser
   end
 
   def commandType
-    if @command[0] = '@'
+    blankLine = /^\s*(#|$)/
+    if @command[0] == '@'
       return :A_COMMAND
     elsif
-      @command[0]= '('
+      @command[0] == '('
       return :L_COMMAND
+    elsif
+      @command[0..1] == '//' || blankLine.match(command)
+      return nil
     else
       return :C_COMMAND
     end
   end
 
   def symbol
-    return nil if commandType == :L_COMMAND
     if commandType == :A_COMMAND
-      return @command[1..-1]
-    else
-      return @command[1..-2]
+      return "%016b" % @command[1..-1]
+    elsif commandType == :L_COMMAND
+      return "%016b" % @command[1..-2]
     end
   end
 

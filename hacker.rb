@@ -12,10 +12,10 @@ class Hacker
   end
 
   def run
-    while !@parser.hasMoreCommands
-      puts @parser.command
+    while @parser.hasMoreCommands
       @parser.advance
-      puts @parser.command
+      puts @parser.commandType
+      binding.pry
     end
   end
 end
