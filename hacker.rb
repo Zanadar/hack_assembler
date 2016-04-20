@@ -14,13 +14,11 @@ class Hacker
   def run
     while @parser.hasMoreCommands
       @parser.advance
-      one = @parser.commandType
       if @parser.commandType == :C_COMMAND
-        two = @parser.whole
+        puts @parser.whole
       else
-        two = @parser.symbol
+        puts @parser.symbol
       end
-      puts one, two
     end
   end
 end
