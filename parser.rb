@@ -39,6 +39,10 @@ class Parser
     end
   end
 
+  def whole
+    [dest, comp, jump]
+  end
+
   def dest
     return if not_c_command
     parts[0]
@@ -55,8 +59,9 @@ class Parser
   end
 
   private
+
   def parts
-    @command.scan(/(.*)\=(.*)\;(.*)/)
+    @command.split('=').flat_map{|x| x.split(';')}.map{|x| x.strip()}
   end
 
   def not_c_command
