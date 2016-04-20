@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require_relative '../hacker.rb'
+
+begin
+  Hacker.new(ARGV).run
+rescue Errno::ENOENT => err
+  abort "Problem loading file: #{err.message}"
+end
+
