@@ -45,7 +45,8 @@ class Parser
 
   def dest
     return if not_c_command
-    parts[0]
+    dst = parts[0]
+    dst ||= 'null'
   end
 
   def comp
@@ -55,7 +56,8 @@ class Parser
 
   def jump
     return if not_c_command
-    parts[2]
+    jmp = parts[2]
+    jmp ||= 'null' # assign to null if its nil
   end
 
   private

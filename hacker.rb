@@ -16,8 +16,7 @@ class Hacker
       @parser.advance
       if @parser.commandType == :C_COMMAND
         dest, comp, jump = @parser.whole
-        puts Code::DEST[dest.to_sym] + Code::COMP[comp.to_sym]
-        puts Code::JMP[jump.to_sym] if jump != nil
+        puts '111' + Code::DEST[dest.to_sym] + Code::COMP[comp.to_sym] + Code::JMP[jump.to_sym]
       else
         puts @parser.symbol
       end
