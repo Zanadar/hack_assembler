@@ -1,5 +1,6 @@
 require_relative './parser'
 require_relative './code'
+require_relative './symbol_table'
 require 'pry-byebug'
 
 class Hacker
@@ -17,13 +18,17 @@ class Hacker
     while @parser.hasMoreCommands
       @parser.advance
       if @parser.commandType == :C_COMMAND
-        dest, comp, jump = @parser.whole
+        dest, comp, jump = @parser.c_parts
+        binding.pry
+        # address = SymbolTable::TABLE[@command.strip[1..-1].to_sym]
         line = '111' + Code::COMP[comp.to_sym] + Code::DEST[dest.to_sym] + Code::JMP[jump.to_sym]
+      # "%016b" % address
       else
         line = @parser.symbol
       end
       @output_file.write(line+"\n")
     end
+    binding.pry
     @output_file.close
   end
 end

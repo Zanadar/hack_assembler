@@ -19,12 +19,12 @@ class Parser
 
   def commandType
     blankLine = /^\s*(#|$)/
-    if @command[0] == '@'
-      return :A_COMMAND
-    elsif @command[0] == '('
-      return :L_COMMAND
-    elsif @command[0..1] == '//' || blankLine.match(command)
+    if @command[0..1] == '//' || blankLine.match(command)
       return nil
+    elsif @command.match(/(?=\s*)@/)
+      return :A_COMMAND
+    elsif @command.match(/(?=\s*)\(/)
+      return :L_COMMAND
     else
       return :C_COMMAND
     end
@@ -32,37 +32,42 @@ class Parser
 
   def symbol
     if commandType == :A_COMMAND
-      return "%016b" % @command[1..-1]
+      return @command.strip[1..-1]
     elsif commandType == :L_COMMAND
-      return "%016b" % @command[1..-2]
+      return @command[1..-2]
     end
-  end
-
-  def whole
-    [dest, comp, jump]
   end
 
   def dest
     return if not_c_command
-    dst = parts[0]
+    dst = get_c_part[0]
     dst ||= 'null'
   end
 
   def comp
     return if not_c_command
-    parts[1]
+    get_c_part[1]
   end
 
   def jump
     return if not_c_command
-    jmp = parts[2]
+    jmp = get_c_part[2]
     jmp ||= 'null' # assign to null if its nil
+  end
+
+  def c_parts
+    [dest, comp, jump]
   end
 
   private
 
-  def parts
-    @command.split('=').flat_map{|x| x.split(';')}.map{|x| x.strip()}
+  def get_c_part
+    clean = @command.split(/\/{2}/)[0]
+    command = clean.split('=').flat_map{|x| x.split(';')}.map{|x| x.strip()}
+    if @command.match(';')
+      command = [nil, command[0], command[1]] # for empty dest
+    end
+    command
   end
 
   def not_c_command
