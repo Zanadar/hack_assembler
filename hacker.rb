@@ -18,7 +18,7 @@ class Hacker
       @parser.advance
       if @parser.commandType == :C_COMMAND
         dest, comp, jump = @parser.whole
-        line = '111' + Code::DEST[dest.to_sym] + Code::COMP[comp.to_sym] + Code::JMP[jump.to_sym]
+        line = '111' + Code::COMP[comp.to_sym] + Code::DEST[dest.to_sym] + Code::JMP[jump.to_sym]
       else
         line = @parser.symbol
       end
