@@ -1,10 +1,8 @@
-require 'pry'
-
 class Parser
   attr_accessor :command
 
-  def initialize(stream)
-    @file = stream
+  def initialize(in_stream)
+    @file = in_stream
     @command = ''
   end
 
@@ -13,18 +11,19 @@ class Parser
   end
 
   def advance
-    @command = @file.gets
+    begin
+      @command = @file.gets
+    end while commandType == nil
+    # So that the commands advance (run at least once)
   end
 
   def commandType
     blankLine = /^\s*(#|$)/
     if @command[0] == '@'
       return :A_COMMAND
-    elsif
-      @command[0] == '('
+    elsif @command[0] == '('
       return :L_COMMAND
-    elsif
-      @command[0..1] == '//' || blankLine.match(command)
+    elsif @command[0..1] == '//' || blankLine.match(command)
       return nil
     else
       return :C_COMMAND
