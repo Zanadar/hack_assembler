@@ -40,12 +40,14 @@ class Hacker
         line = '111' + Code::COMP[comp] + Code::DEST[dest] + Code::JMP[jump]
       elsif type == :A_COMMAND
         symbol = @parser.symbol
-        if !address = @table.table[symbol]
+        if symbol.is_a? Numeric
+          address = symbol
+        elsif !address = @table.table[symbol]
           address = @table.store_variable(symbol)
         end
         line = "%016b" % address
-      else # :L_Command
-        line = "%016b" % @table.table[@parser.symbol]
+      else
+        next #skip this iteration of the loop
       end
       @output_file.write(line+"\n")
     end

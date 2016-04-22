@@ -35,5 +35,8 @@ class SymbolTable
 
   def store_variable(variable)
     @table[variable] = @RAM_address
+    prev = @RAM_address
+    @RAM_address+=1
+    prev
   end
 end
