@@ -12,23 +12,46 @@ class Hacker
     new_path = File.basename(file_path, ".*")
     @output_file = File.new(File.dirname(__FILE__) + "/#{new_path}.hack", "w+")
     @parser = Parser.new(file_stream)
+    @table = SymbolTable.new
   end
 
   def run
+    first_pass
+    second_pass
+  end
+
+  def first_pass
     while @parser.hasMoreCommands
       @parser.advance
-      if @parser.commandType == :C_COMMAND
-        dest, comp, jump = @parser.c_parts
-        binding.pry
-        # address = SymbolTable::TABLE[@command.strip[1..-1].to_sym]
-        line = '111' + Code::COMP[comp.to_sym] + Code::DEST[dest.to_sym] + Code::JMP[jump.to_sym]
-      # "%016b" % address
+      if  type == :A_COMMAND || type == :C_COMMAND
+        @table.rom+=1
       else
-        line = @parser.symbol
+        @table.table[@parser.symbol] = @table.rom
+      end
+    end
+    @parser.rewind
+  end
+
+  def second_pass
+    while @parser.hasMoreCommands
+      @parser.advance
+      if type == :C_COMMAND
+        dest, comp, jump = @parser.c_parts
+        line = '111' + Code::COMP[comp.to_sym] + Code::DEST[dest.to_sym] + Code::JMP[jump.to_sym]
+      elsif type == :A_COMMAND
+        binding.pry
+        address = @table.table[@parser.command.to_sym]
+        line = "%016b" % address
+      else
+        binding.pry
+        line = "%016b" % @parser.symbol
       end
       @output_file.write(line+"\n")
     end
-    binding.pry
     @output_file.close
+  end
+
+  def type
+    @parser.command_type
   end
 end

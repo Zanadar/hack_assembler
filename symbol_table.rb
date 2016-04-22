@@ -1,5 +1,5 @@
-module SymbolTable
-  attr_accessor :rom
+class SymbolTable
+  attr_accessor :rom, :table
 
   TABLE={
     SP: '0',
@@ -27,4 +27,8 @@ module SymbolTable
     KBD: '24576'
   }
 
+  def initialize
+    @rom = 0
+    @table = TABLE
+  end
 end

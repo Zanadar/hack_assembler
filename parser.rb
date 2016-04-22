@@ -3,7 +3,7 @@ class Parser
 
   def initialize(in_stream)
     @file = in_stream
-    @command = ''
+    @command = command
   end
 
   def hasMoreCommands
@@ -12,14 +12,15 @@ class Parser
 
   def advance
     begin
-      @command = @file.gets
-    end while commandType == nil
-    # So that the commands advance (run at least once)
+      command = @file.gets.strip
+      clean_comments = command.split(/\/{2}/)[0] || ""
+      @command = clean_comments
+    end while command_type == nil # So that the commands advance (run at least once)
   end
 
-  def commandType
+  def command_type
     blankLine = /^\s*(#|$)/
-    if @command[0..1] == '//' || blankLine.match(command)
+    if @command[0..1] == '//' || @command.match(blankLine)
       return nil
     elsif @command.match(/(?=\s*)@/)
       return :A_COMMAND
@@ -30,10 +31,14 @@ class Parser
     end
   end
 
+  def rewind
+    @file.rewind
+  end
+
   def symbol
-    if commandType == :A_COMMAND
-      return @command.strip[1..-1]
-    elsif commandType == :L_COMMAND
+    if command_type == :A_COMMAND
+      return @command[1..-1]
+    elsif command_type == :L_COMMAND
       return @command[1..-2]
     end
   end
@@ -71,6 +76,6 @@ class Parser
   end
 
   def not_c_command
-    commandType != :C_COMMAND
+    command_type != :C_COMMAND
   end
 end
