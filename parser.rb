@@ -37,9 +37,10 @@ class Parser
 
   def symbol
     if command_type == :A_COMMAND
-      if @command[1..-1].match(/\d/)
+      if @command[1..-1].match(/\A\d/)
         return @command[1..-1].to_i
       else
+
         return @command[1..-1].to_sym
       end
     elsif command_type == :L_COMMAND

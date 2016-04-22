@@ -44,6 +44,8 @@ class Hacker
           address = symbol
         elsif !address = @table.table[symbol]
           address = @table.store_variable(symbol)
+        else
+          address = @table.table[symbol]
         end
         line = "%016b" % address
       else
