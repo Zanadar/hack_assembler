@@ -1,5 +1,5 @@
 class SymbolTable
-  attr_accessor :rom, :table
+  attr_accessor :rom, :table, :RAM_address
 
   TABLE={
     SP: '0',
@@ -30,5 +30,10 @@ class SymbolTable
   def initialize
     @rom = 0
     @table = TABLE
+    @RAM_address = 16
+  end
+
+  def store_variable(variable)
+    @table[variable] = @RAM_address
   end
 end

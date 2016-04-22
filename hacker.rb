@@ -36,15 +36,16 @@ class Hacker
     while @parser.hasMoreCommands
       @parser.advance
       if type == :C_COMMAND
-        dest, comp, jump = @parser.c_parts
-        line = '111' + Code::COMP[comp.to_sym] + Code::DEST[dest.to_sym] + Code::JMP[jump.to_sym]
+        dest, comp, jump = @parser.c_part_symbols
+        line = '111' + Code::COMP[comp] + Code::DEST[dest] + Code::JMP[jump]
       elsif type == :A_COMMAND
-        binding.pry
-        address = @table.table[@parser.command.to_sym]
+        symbol = @parser.symbol
+        if !address = @table.table[symbol]
+          address = @table.store_variable(symbol)
+        end
         line = "%016b" % address
-      else
-        binding.pry
-        line = "%016b" % @parser.symbol
+      else # :L_Command
+        line = "%016b" % @table.table[@parser.symbol]
       end
       @output_file.write(line+"\n")
     end

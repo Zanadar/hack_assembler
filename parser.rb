@@ -37,9 +37,9 @@ class Parser
 
   def symbol
     if command_type == :A_COMMAND
-      return @command[1..-1]
+      return @command[1..-1].to_sym
     elsif command_type == :L_COMMAND
-      return @command[1..-2]
+      return @command[1..-2].to_sym
     end
   end
 
@@ -60,8 +60,8 @@ class Parser
     jmp ||= 'null' # assign to null if its nil
   end
 
-  def c_parts
-    [dest, comp, jump]
+  def c_part_symbols
+    [dest.to_sym, comp.to_sym, jump.to_sym]
   end
 
   private
