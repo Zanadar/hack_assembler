@@ -1,13 +1,11 @@
 require_relative './parser'
 require_relative './code'
 require_relative './symbol_table'
-require 'pry-byebug'
 
 class Hacker
   def initialize(args)
-    @args = args
-    new_path = File.basename(file_path, ".*")
-    @output_file = File.new(File.dirname(__FILE__) + "/#{new_path}.hack", "w+")
+    @file_path = args[0]
+    @output_file = setup_output_file
     @parser = Parser.new(setup_input_file)
     @table = SymbolTable.new
   end
@@ -30,7 +28,14 @@ class Hacker
   def second_pass
     while @parser.hasMoreCommands
       @parser.advance
-      process_commands
+      if type == :C_COMMAND
+        line = process_C_command
+      elsif type == :A_COMMAND
+        line = process_A_command
+      else
+        next #skip this iteration of the loop
+      end
+      @output_file.write(line+"\n")
     end
     @output_file.close
   end
@@ -40,10 +45,14 @@ class Hacker
   end
 
   def setup_input_file
-    file_path = @args[0]
-    fd = IO.sysopen(file_path) #defaults to 'r'
+    fd = IO.sysopen(@file_path) #defaults to 'r'
     file_stream = IO.new(fd, 'r')
     file_stream
+  end
+
+  def setup_output_file
+    new_path = File.basename(@file_path, ".*")
+    File.new(File.dirname(__FILE__) + "/#{new_path}.hack", "w+")
   end
 
   def allocate_symbols
@@ -55,14 +64,6 @@ class Hacker
   end
 
   def process_commands
-    if type == :C_COMMAND
-      line = process_C_command
-    elsif type == :A_COMMAND
-      line = process_A_command
-    else
-      next #skip this iteration of the loop
-    end
-    @output_file.write(line+"\n")
   end
 
   def process_A_command
